@@ -4,6 +4,11 @@ const fetch = require('node-fetch');
 const app = express();
 app.use(express.json());
 
+
+app.get("/", (req, res) => {
+    res.send("Im working");
+  });
+
 // Función para obtener citas de Los Simpsons para un personaje específico
 const getSimpsonsQuotes = async (character) => {
   try {
