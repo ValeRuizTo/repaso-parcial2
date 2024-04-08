@@ -49,6 +49,6 @@ app.get('/normal-value/:variable', (req, res) => {
 });
 
 // Iniciar el servidor en el puerto 3000
-app.listen(3000, () => {
-  console.log('Servidor en ejecución en el puerto 3000');
+app.listen(8080, () => {
+  console.log('Servidor en ejecución en el puerto 8080');
 });
