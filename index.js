@@ -2,7 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 
 // Función para obtener citas de Los Simpsons para un personaje específico
 const getSimpsonsQuotes = async (character) => {
@@ -28,37 +28,32 @@ const getSimpsonsQuotes = async (character) => {
   }
 };
 
-// Endpoint para obtener citas de Los Simpsons para un personaje específico
-app.get('/simpsons-quotes', async (req, res) => {
-  try {
-    // Obtener el nombre del personaje del parámetro de consulta
-    const character = req.query.character;
-
-    // Verificar si se proporcionó el nombre del personaje
-    if (!character) {
-      return res.status(400).json({ error: 'Se requiere el parámetro "character"' });
-    }
-
-    // Obtener las citas de Los Simpsons utilizando la función asincrónica getSimpsonsQuotes
-    const quotes = await getSimpsonsQuotes(character);
-
-    // Devolver las citas en la respuesta
-    res.json(quotes);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener citas de Los Simpsons' });
-  }
-});
-
 // Endpoint con una variable fija
 app.get('/fixed-value', (req, res) => {
   const fixedValue = 'valorFijo';
-  res.json({ fixedValue });
+  res.send(fixedValue);
 });
 
+// Endpoint para obtener citas de Los Simpsons para un personaje específico
+app.get('/:character', async (req, res) => {
+    try {
+      // Obtener el nombre del personaje de los parámetros de la URL
+      const character = req.params.character;
+  
+      // Obtener las citas de Los Simpsons utilizando la función asincrónica getSimpsonsQuotes
+      const quotes = await getSimpsonsQuotes(character);
+  
+      // Devolver las citas en la respuesta como texto
+      res.send(quotes.quotes.join('\n'));
+    } catch (error) {
+      res.status(500).send('Error al obtener citas de Los Simpsons');
+    }
+  });
+  
 // Endpoint con una variable normal
 app.get('/normal-value/:variable', (req, res) => {
   const normalValue = req.params.variable;
-  res.json({ normalValue });
+  res.send(normalValue);
 });
 
 // Iniciar el servidor en el puerto 3000
