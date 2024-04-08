@@ -2,18 +2,11 @@ const express = require('express');
 const fetch = require('node-fetch');
 
 const app = express();
+app.use(express.json())
 
-// Endpoint para obtener citas de Los Simpsons para un personaje específico
-app.get('/simpsons-quotes', async (req, res) => {
+// Función para obtener citas de Los Simpsons para un personaje específico
+const getSimpsonsQuotes = async (character) => {
   try {
-    // Obtener el nombre del personaje del parámetro de consulta
-    const character = req.query.character;
-
-    // Verificar si se proporcionó el nombre del personaje
-    if (!character) {
-      return res.status(400).json({ error: 'Se requiere el parámetro "character"' });
-    }
-
     // Hacer una solicitud a la API de citas de Los Simpsons para obtener citas para el personaje especificado
     const response = await fetch(`https://thesimpsonsquoteapi.glitch.me/quotes?character=${character}`);
 
@@ -28,10 +21,30 @@ app.get('/simpsons-quotes', async (req, res) => {
     // Extraer las citas de la respuesta
     const quotesText = quotes.map(quote => quote.quote);
 
-    // Devolver las citas en la respuesta
-    res.json({ character, quotes: quotesText });
+    return { character, quotes: quotesText };
   } catch (error) {
     console.error('Error al obtener citas de Los Simpsons:', error);
+    throw new Error('Error al obtener citas de Los Simpsons');
+  }
+};
+
+// Endpoint para obtener citas de Los Simpsons para un personaje específico
+app.get('/simpsons-quotes', async (req, res) => {
+  try {
+    // Obtener el nombre del personaje del parámetro de consulta
+    const character = req.query.character;
+
+    // Verificar si se proporcionó el nombre del personaje
+    if (!character) {
+      return res.status(400).json({ error: 'Se requiere el parámetro "character"' });
+    }
+
+    // Obtener las citas de Los Simpsons utilizando la función asincrónica getSimpsonsQuotes
+    const quotes = await getSimpsonsQuotes(character);
+
+    // Devolver las citas en la respuesta
+    res.json(quotes);
+  } catch (error) {
     res.status(500).json({ error: 'Error al obtener citas de Los Simpsons' });
   }
 });
